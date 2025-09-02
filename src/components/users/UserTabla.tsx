@@ -1,20 +1,18 @@
 import {
+  Delete as DeleteIcon,
+  Edit as EditIcon
+} from '@mui/icons-material';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
+import { Box, Chip, IconButton, Stack, Tooltip } from '@mui/material';
+import type { GridSortModel } from '@mui/x-data-grid';
+import {
   DataGrid,
   type GridColDef,
   type GridPaginationModel,
   type GridRenderCellParams,
 } from '@mui/x-data-grid';
 import type { UserType } from './type';
-import { Box, Chip, IconButton, Stack, Tooltip } from '@mui/material';
-import {
-  Edit as EditIcon,
-  Undo as UndoIcon,
-  Done as DoneIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material';
-import type { GridSortModel } from '@mui/x-data-grid';
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 
 interface Props {
   users: UserType[];

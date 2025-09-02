@@ -1,16 +1,13 @@
 import { Box } from '@mui/material';
 import type { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import {
-  type TaskActionState
-} from '../../components';
 import { UserHeader, UserTabla } from '../../components/users';
+import { UserDialog, type UserActionState } from '../../components/users/UserDialog';
 import { UserFilter } from '../../components/users/UserFilter';
 import type { UserFilterStatusType, UserType } from '../../components/users/type';
 import { errorHelper, hanleZodError } from '../../helpers';
 import { useAlert, useAxios } from '../../hooks';
-import { schemaTask, type TaskFormValues, type UserFormValues } from '../../models';
-import { UserDialog, type UserActionState } from '../../components/users/UserDialog';
+import { schemaUser, type UserFormValues } from '../../models';
 
 export const UsersPage = () => {
   const { showAlert } = useAlert();
@@ -29,11 +26,11 @@ export const UsersPage = () => {
   const [user, setUser] = useState<UserType | null>(null);
 
   useEffect(() => {
-    listTaskApi();
+    listUserApi();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, filterStatus, paginationModel, sortModel]);
 
-  const listTaskApi = async () => {
+  const listUserApi = async () => {
     try {
       const orderBy = sortModel[0]?.field;
       const orderDir = sortModel[0]?.sort;
@@ -74,12 +71,14 @@ export const UsersPage = () => {
     formdata: FormData
   ) => {
     const rawData = {
-      username: formdata.get('username') as string,
-      password: formdata.get('password') as string,      
-    };
-
+      username: formdata.get("username") as string,
+      password: formdata.get("password") as string,
+      confirmPassword: formdata.get("confirmPassword") as string,
+    };  
     try {
-      schemaTask.parse(rawData);
+     
+      schemaUser.parse(rawData);
+     
       if (user?.id) {
         await axios.put(`/users/${user.id}`, rawData);
         showAlert('Usuario editado', 'success');
@@ -87,10 +86,11 @@ export const UsersPage = () => {
         await axios.post('/users', rawData);
         showAlert('Usuario creado', 'success');
       }
-      listTaskApi();
+      listUserApi();
       handleCloseDialog();
       return;
     } catch (error) {
+      console.error("Error en handleCreateEdit:", error);
       const err = hanleZodError<UserFormValues>(error, rawData);
       showAlert(err.message, 'error');
       return err;
@@ -104,7 +104,7 @@ export const UsersPage = () => {
 
       await axios.delete(`/users/${id}`);
       showAlert('Usuario eliminado', 'success');
-      listTaskApi();
+      listUserApi();
     } catch (error) {
       showAlert(errorHelper(error), 'error');
     }
@@ -120,7 +120,7 @@ export const UsersPage = () => {
       const newStatus = status === "active" ? "inactive" : "active";      
       await axios.patch(`/users/${id}`, { status: newStatus });
       showAlert('Usuario modificado', 'success');
-      listTaskApi();
+      listUserApi();
     } catch (error) {
       showAlert(errorHelper(error), 'error');
     }

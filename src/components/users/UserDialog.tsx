@@ -6,13 +6,16 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
+  InputAdornment,
   TextField,
 } from '@mui/material';
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { createInitialState } from '../../helpers';
 import type { ActionState } from '../../interfaces';
 import type { UserType } from './type';
 import type { UserFormValues } from '../../models';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 export type UserActionState = ActionState<UserFormValues>;
 
@@ -32,6 +35,11 @@ export const UserDialog = ({ onClose, open, user: user, handleCreateEdit }: Prop
     handleCreateEdit,
     initialState
   );
+  const [showPassword, setShowPassword] = useState(false);  
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth={'sm'} fullWidth>
@@ -55,15 +63,30 @@ export const UserDialog = ({ onClose, open, user: user, handleCreateEdit }: Prop
 
           <TextField
             name="password"
-            margin="normal"
-            required
+            margin="dense"
+            label="Contraseña"
             fullWidth
-            label="Password"
-            type="password"
+            required
+            variant="outlined"
             disabled={isPending}
-            defaultValue={state?.formData?.password}
+            type={showPassword ? "text" : "password"}
+            defaultValue={state?.formData?.password || user?.password || ""}
             error={!!state?.errors?.password}
             helperText={state?.errors?.password}
+            sx={{ mb: 2 }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleTogglePassword}
+                    edge="end"
+                    aria-label="toggle password visibility"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
           <TextField
             name="confirmPassword"
@@ -71,11 +94,23 @@ export const UserDialog = ({ onClose, open, user: user, handleCreateEdit }: Prop
             required
             fullWidth
             label="Repetir password"
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             disabled={isPending}
             defaultValue={state?.formData?.confirmPassword}
             error={!!state?.errors?.confirmPassword}
             helperText={state?.errors?.confirmPassword}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    edge="end"
+                  >
+                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
